@@ -1,0 +1,122 @@
+<!DOCTYPE >
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+    	<meta name="viewport" content="width=device-width, initial-scale=1">		
+		<title>A-Class</title> 
+		<link rel="stylesheet" href="../../css/bootstrap.min.css">  
+		<link rel="stylesheet" href="../../css/common.css">  
+		<link rel="stylesheet" href="../../css/navBar.css">  
+		<link rel="stylesheet" href="../../css/table.css">  
+		<script src="../../js/jquery.min.js"></script>	 
+		<script src="../../js/bootstrap.min.js"></script>
+		<script src="../../js/bootbox.min.js"></script> 
+		<script src="../../js/md5.js"></script>
+	</head>
+	
+	
+	<body background="../../img/BackGround.png">
+		<!-- 导航栏 -->
+		<div>
+			<nav class="navbar navbar-AClass" role="navigation">
+				<div class="container-fluid">
+					<div class="navbar-header">
+						<a class="navbar-brand" href="#">A-Class</a>
+					</div>
+					<div>
+						<ul class="nav navbar-nav">
+						<li><a id="homeWorkPage" href="#">作业</a></li>
+						<li><a id="rollCallPage" href="../RollCall/searchRollCall.html">点名</a></li>
+						<li><a id="accountPage" href="../Account/changePwd.html">账号</a></li>
+						<li><a id="exitPage" href="#">退出</a></li>
+					</div>
+				</div>
+			</nav>
+		</div>
+		<!-- 导航栏结束 -->
+		
+		<div class="container">
+			<!-- 题目列表-->
+			<div>
+				<table class="table" style="width: 900px;margin-top: 20px;">
+					<thead>
+						<tr>
+							<th class="col-lg-1">题号</th>
+							<th class="col-lg-3">题目</th>
+							<th class="col-lg-1">是否完成</th>
+							<th class="col-lg-1">分数</th>
+						</tr>
+					</thead>
+					<tbody id="myTBody">
+
+					</tbody>
+				</table>
+			</div>
+			<!-- 题目列表结束 -->
+		</div>
+	</body>
+	
+	
+	<script>
+		// 导航栏高亮
+		$("#homeWorkPage").addClass("currentPage");
+		
+		$("#exitPage").click(function(){
+			sessionStorage.clear();
+			window.location.href="../../index.html";
+		})
+		
+		$(document).ready(function(){
+			var homeWorkId = sessionStorage.getItem("homeWorkId");
+			$.ajax({
+							url: "/api/student/homework/detail", 
+							data: {
+									'homeworkId':homeWorkId,
+									'stuId':sessionStorage.getItem("stuId")
+									},
+							type: 'post',
+							contentType: "application/x-www-form-urlencoded;charset=UTF-8",
+							dataType: "text",
+							async: false, 
+							success: function (data) {
+								getHomeworkDetail(data);
+							},
+							error: function() {
+								
+							}
+						});
+		})
+		
+		function selectHomework(id)
+		{
+			sessionStorage.setItem("HomeworkDetail",id);
+			window.location.href="UploadHomework.html";
+		}
+		
+		function getHomeworkDetail(data){
+			var dataObj = eval(data);
+			
+			var insertHtml = "";
+			
+			$.each(dataObj,function(index,item){
+				item = eval("("+item+")");
+
+				insertHtml +=  "<tr onclick='selectHomework("+item.id+")'>"
+							  +"<td>" + (index + 1) + "</td>"
+							  +"<td>" + item.title + "</td>"
+				if(item.status)
+					insertHtml +="<td>已完成</td>"
+				else
+					insertHtml +="<td>未完成</td>"
+				if(item.mark != -1)
+					insertHtml += "<td>" + item.mark + "</td>";
+				else
+					insertHtml +=  "<td>未评分</td>";
+				insertHtml+="</tr>"
+			});
+			
+			$("#myTBody").append(insertHtml);
+		}
+	</script>
+</html>

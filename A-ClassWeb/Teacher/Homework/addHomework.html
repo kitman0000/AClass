@@ -1,0 +1,97 @@
+<!DOCTYPE >
+<html>
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+    	<meta name="viewport" content="width=device-width, initial-scale=1">		
+		<title>A-Class</title> 
+		<link rel="stylesheet" href="../../css/bootstrap.css">  
+		<link rel="stylesheet" href="../../css/common.css">  
+		<link rel="stylesheet" href="../../css/navBar.css">  
+		<link rel="stylesheet" href="../../css/table.css">  
+		<script src="../../js/jquery.min.js"></script>	 
+		<script src="../../js/bootstrap.min.js"></script>
+		<script src="../../js/bootbox.min.js"></script>  
+	</head>
+	
+	<body background="../../img/BackGround.png">
+		<!-- 导航栏 -->
+		<div>
+			<nav class="navbar navbar-AClass" role="navigation">
+				<div class="container-fluid">
+					<div class="navbar-header">
+						<a class="navbar-brand" href="#">A-Class</a>
+					</div>
+					<div>
+						<ul class="nav navbar-nav">
+						<li><a id="homeWorkPage" class="currentPage" href="selectHomework.html">作业</a></li>
+						<li><a id="rollCallPage" href="../RollCall/searchRollCall.html">点名</a></li>
+						<li><a id="studentPage" href="../StudentManage/studentManage.html">学生</a></li>
+						<li><a id="accountPage" href="../Account/changePwd.html">账号</a></li>
+						<li><a id="exitPage" href="#">退出</a></li>
+					</div>
+				</div>
+			</nav>
+		</div>
+		<!-- 导航栏结束 -->
+		
+		<div class="container">
+			<label>作业名称：</label>
+			<input id="homeworkName"/>
+			<label>截止日期：</label>
+			<input id="deadline"/>
+			<button class="btn" id="addHomework" style="background: #6cb989;color: #fff;">添加</button>
+		</div>
+		
+	</body>
+	
+	<script>
+		// 导航栏高亮
+		$("#homeWorkPage").addClass("currentPage");
+		$("#exitPage").click(function() {
+			sessionStorage.clear();
+			window.location.href = "../../index.html";
+		});
+		$("#addHomework").click(function(){
+			var homeworkName = $("#homeworkName").val();
+			var deadline = $("#deadline").val();
+			var mydate = new Date();
+			var nowDate = "" + mydate.getFullYear() + "-";
+			nowDate += (mydate.getMonth()+1) + "-";
+			nowDate += mydate.getDate();
+			var teacherId = sessionStorage.getItem("teacherId");
+			var teacherPwd = sessionStorage.getItem("teacherPwd");
+			$.ajax({
+							url: "/api/teacher/homework/addHomework", 
+							data: {
+									'name':homeworkName,
+									'uploadDate':nowDate,
+									'destDate':deadline,
+									'teacherId':teacherId,
+									'pwd':teacherPwd,
+									},
+							type: 'post',
+							contentType: "application/x-www-form-urlencoded;charset=UTF-8",
+							dataType: "text",
+							async: false, 
+							success: function (data) {
+								if(data == "ADD_HOMEWORK_FAILED"){
+									alert("添加作业失败");
+								}
+								else{
+									getHomeworkId(data);
+								}
+							},
+							error: function(XMLHttpRequest, textStatus, errorThrown) {
+								
+							}
+						});
+		})
+		
+		function getHomeworkId(data){
+			alert("添加作业成功！");
+			sessionStorage.setItem("teacherHomeworkId",data);
+			window.location.href="addQuestion.html";
+		}
+	</script>

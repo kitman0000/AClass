@@ -1,0 +1,214 @@
+<!DOCTYPE >
+<html>
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+    	<meta name="viewport" content="width=device-width, initial-scale=1">		
+		<title>A-Class</title> 
+
+		<script src="../../js/jquery.min.js"></script>	 
+		<script src="../../js/bootstrap.min.js"></script>
+		<script src="../../js/bootbox.min.js"></script>  
+		
+		<link rel="stylesheet" href="../../css/bootstrap.css">  
+		<link rel="stylesheet" href="../../css/common.css">  
+		<link rel="stylesheet" href="../../css/navBar.css">  
+		<link rel="stylesheet" href="../../css/table.css">  
+		
+		<style>
+			.question
+			{
+				padding-top: 20px;
+				padding-left: 20px;
+				min-height: 250px;
+				background: #ffffff88;
+				font-size: 18px;
+				
+				border-bottom: 2px solid #777;
+			}
+			
+			.answer
+			{
+				margin-top: 50px;
+				
+				padding-top: 20px;
+				padding-left: 20px;
+				background: #ffffff88;
+				height: 80px;
+				
+				border-bottom: 2px solid #777;
+			}
+			
+			.uploadBtn
+			{
+				padding-top: 2px;
+				padding-bottom: 2px;
+				padding-left: 9px;
+				padding-right: 9px;
+				background: #63ff97;
+				
+				border-radius: 5px;
+				border:1px #888 solid;
+			}
+		</style>
+	</head>
+	
+
+	
+	<body background="../../img/BackGround.png">
+		<!-- 导航栏 -->
+		<div>
+			<nav class="navbar navbar-AClass" role="navigation">
+				<div class="container-fluid">
+					<div class="navbar-header">
+						<a class="navbar-brand" href="#">A-Class</a>
+					</div>
+					<div>
+						<ul class="nav navbar-nav">
+						<li><a id="homeWorkPage" class="currentPage" href="selectHomework.html">作业</a></li>
+						<li><a id="rollCallPage" href="../RollCall/searchRollCall.html">点名</a></li>
+						<li><a id="studentPage" href="../StudentManage/studentManage.html">学生</a></li>
+						<li><a id="accountPage" href="../Account/changePwd.html">账号</a></li>
+						<li><a id="exitPage" href="#">退出</a></li>
+					</ul></div>
+				</div>
+			</nav>
+		</div>
+		<!-- 导航栏结束 -->
+		
+		<div class="container">
+			<div id="title" class="question">
+
+			</div>
+			
+			<!-- 已上交学生列表 -->
+			<div>
+				<table class="table" style="width: 1200px;margin-top: 20px;">
+					<thead>
+						<tr>
+							<th class="col-lg-1">学号</th>
+							<th class="col-lg-1">姓名</th>
+							<th class="col-lg-2">状态</th>
+							<th class="col-lg-1">下载</th>
+							<th class="col-lg-1">分数</th>
+						</tr>
+					</thead>
+					<tbody id="myTbody">
+					
+					</tbody>
+				</table>
+			</div>
+			<!-- 已上交学生列表结束 -->
+		</div>
+		
+		
+		
+	
+	
+	
+	<script>
+		// 导航栏高亮
+		$("#homeWorkPage").addClass("currentPage");
+		$("#exitPage").click(function() {
+			sessionStorage.clear();
+			window.location.href = "../../index.html";
+		});
+		var questionId = sessionStorage.getItem("HomeworkDetail");
+		$.ajax({
+						url: "/api/teacher/homework/doneQuestion", 
+						data: {
+								'questionId':questionId,
+								},
+						type: 'post',
+						contentType: "application/x-www-form-urlencoded;charset=UTF-8",
+						dataType: "text",
+						async: false, 
+						success: function (data) {
+							doneHomeworkDetail(data);
+						},
+						error: function() {
+							
+						},
+						
+					});
+					
+		$.ajax({
+				url: "/api/teacher/homework/getQuestionTitle", 
+				data: {
+						'questionId':questionId,
+						},
+				type: 'post',
+				contentType: "application/x-www-form-urlencoded;charset=UTF-8",
+				dataType: "text",
+				async: false, 
+				success: function (data) {
+					$("#title").html(data);
+				},
+				error: function() {
+					
+				},
+				
+			});
+		function doneHomeworkDetail(data) {
+			var dataObj = eval(data);
+			
+			var insertHtml;
+			
+			$.each(dataObj,function(index,item){
+				item = eval("("+item+")");
+				insertHtml +=  "<tr>"
+							  +"<td>" + item.stuId + "</td>"
+							  +"<td>" + item.stuName + "</td>";
+				if(item.status)
+					insertHtml +="<td>已完成</td>"
+				else
+					insertHtml +="<td>未完成</td>"
+							  
+				insertHtml += "<td><a href='"+item.filePath+"'>下载</td>";
+				if(item.mark != -1)
+					insertHtml += "<td onclick='stuHomeworkDetail(\""+item.stuId+"\")'>" + item.mark + "</td>";
+				else
+					insertHtml +=  "<td onclick='stuHomeworkDetail(\""+item.stuId+"\")'>未评分</td>";
+				insertHtml+="</tr>"
+			});
+			$("#myTbody").append(insertHtml);
+		}
+		
+		function stuHomeworkDetail(stuId){
+			var score = prompt("请打分","");
+			var questionId = sessionStorage.getItem("HomeworkDetail");
+			var teacherId = sessionStorage.getItem("teacherId");
+			var teacherPwd = sessionStorage.getItem("teacherPwd");
+			$.ajax({
+							url: "/api/teacher/homework/scoring", 
+							data: {
+									'mark':score,
+									'questionId':questionId,
+									'teacherId':teacherId,
+									'pwd':teacherPwd,
+									'stuId':stuId,
+									},
+							type: 'post',
+							contentType: "application/x-www-form-urlencoded;charset=UTF-8",
+							dataType: "text",
+							async: false, 
+							success: function (data) {
+								if(data == "SCORED_SUCCESS"){
+									alert("打分成功!");
+									window.location.reload();
+								}
+								else if(data == "SCORED_FAILED"){
+									alert("打分失败！");
+								}
+							},
+							error: function() {
+								
+							},
+							
+						});
+		}
+		
+	</script>
+	</body>
+</html>

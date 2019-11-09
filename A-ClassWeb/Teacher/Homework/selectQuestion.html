@@ -1,0 +1,128 @@
+<!DOCTYPE >
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+    	<meta name="viewport" content="width=device-width, initial-scale=1">		
+		<title>A-Class</title> 
+		<link rel="stylesheet" href="../../css/bootstrap.min.css">  
+		<link rel="stylesheet" href="../../css/common.css">  
+		<link rel="stylesheet" href="../../css/navBar.css">  
+		<link rel="stylesheet" href="../../css/table.css">  
+		<script src="../../js/jquery.min.js"></script>	 
+		<script src="../../js/bootstrap.min.js"></script>
+		<script src="../../js/bootbox.min.js"></script>  
+	</head>
+	
+	<style>
+		.addQuestion
+		{
+			color: #000;
+		}
+		
+		.addQuestion:hover
+		{
+			color: black;
+		}
+	</style>
+	
+	
+	<body background="../../img/BackGround.png">
+		<!-- 导航栏 -->
+		<div>
+			<nav class="navbar navbar-AClass" role="navigation">
+				<div class="container-fluid">
+					<div class="navbar-header">
+						<a class="navbar-brand" href="#">A-Class</a>
+					</div>
+					<div>
+						<ul class="nav navbar-nav">
+						<li><a id="homeWorkPage" class="currentPage" href="selectHomework.html">作业</a></li>
+						<li><a id="rollCallPage" href="../RollCall/searchRollCall.html">点名</a></li>
+						<li><a id="studentPage" href="../StudentManage/studentManage.html">学生</a></li>
+						<li><a id="accountPage" href="../Account/changePwd.html">账号</a></li>
+						<li><a id="exitPage" href="#">退出</a></li>
+					</div>
+				</div>
+			</nav>
+		</div>
+		<!-- 导航栏结束 -->
+		
+		<div class="container">
+			<div style="margin-top: 20px;">
+				<a class="addQuestion" href="addQuestion.html">添加题目</a>
+			</div>
+			<!-- 题目列表-->
+			<div>
+				<table class="table" style="width: 900px;margin-top: 20px;">
+					<thead>
+						<tr>
+							<th class="col-lg-1">题号</th>
+							<th class="col-lg-3">题目</th>
+						</tr>
+					</thead>
+					<tbody id="myTbody">
+						
+					</tbody>
+				</table>
+			</div>
+			<!-- 题目列表结束 -->
+			
+			
+		</div>
+	</body>
+	
+	
+	<script>
+		// 导航栏高亮
+		$("#homeWorkPage").addClass("currentPage");
+		$("#exitPage").click(function(){
+			sessionStorage.clear();
+			window.location.href="../../index.html";
+		})
+		$("#exitPage").click(function() {
+			sessionStorage.clear();
+			window.location.href = "../../index.html";
+		});
+		$(document).ready(function(){
+			var homeWorkId = sessionStorage.getItem("teacherHomeworkId");
+			$.ajax({
+							url: "/api/teacher/homework/detail", 
+							data: {
+									'homeworkId':homeWorkId,
+									},
+							type: 'post',
+							contentType: "application/x-www-form-urlencoded;charset=UTF-8",
+							dataType: "text",
+							async: false, 
+							success: function (data) {
+								getHomeworkDetail(data);
+							},
+							error: function() {
+								
+							}
+						});
+		})
+		
+		function HomeworkDetail(id)
+		{
+			sessionStorage.setItem("HomeworkDetail",id);
+			window.location.href="viewHomework.html";
+		}
+		
+		function getHomeworkDetail(data){
+			var dataObj = eval(data);
+			
+			var insertHtml;
+			
+			$.each(dataObj,function(index,item){
+				item = eval("("+item+")");
+				insertHtml +=  "<tr onclick='HomeworkDetail("+item.id+")'>"
+							  +"<td>" + (index + 1) + "</td>"
+							  +"<td>" + item.title + "</td>"
+							  +"</tr>"
+			});
+			$("#myTbody").append(insertHtml);
+		}
+	</script>
+</html>

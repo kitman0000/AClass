@@ -1,0 +1,9 @@
+.linkAble
+{
+	cursor: pointer;
+}
+
+.linkAble:hover
+{
+	text-decoration: underline;
+}

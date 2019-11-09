@@ -1,0 +1,101 @@
+<!DOCTYPE >
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>A-Class</title>
+		<link rel="stylesheet" href="../css/bootstrap.min.css">
+		<script src="../js/jquery.min.js"></script>
+		<script src="../js/bootstrap.min.js"></script>
+		<script src="../js/bootbox.min.js"></script>
+		<script src="../js/md5.js"></script>
+	</head>
+
+	<style>
+		.InputItem
+		{
+			margin-top: 20px;
+		}
+		input
+		{
+			width: 300px;
+			height: 32px;
+			border: 0px;
+			padding-top: 5px;
+			padding-bottom: 5px;
+			padding-left: 10px;
+			padding-right: 3px;
+			background: #DDFFDD;
+		}
+		
+		input:focus
+		{
+			background: #FFDDDD;
+		}
+		
+		.loginBtn
+		{
+			margin-top: 12px;
+			height: 38px;
+			width: 300px;
+		}
+	</style>
+
+	<body background="../img/BackGround.png">
+		<div class="container">
+			<div style="height: 700px;width: 500px;background: #2ec770;margin: auto;margin-top: 100px;opacity: 0.7;padding-left: 10%;padding-top: 180px;">
+				<div class="InputItem">
+					<label>用户名：</label></br>
+					<input id="userName" />
+				</div>
+				<div class="InputItem">
+					<label>密码：</label></br>
+					<input id="password" type="password" />
+				</div>
+				<div class="InputItem">
+					<button id="login" class="loginBtn">登录</button>
+					<button id="BackToIndex" class="loginBtn">返回</button>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script>
+		function StuLoginSuccess(data) {
+			sessionStorage.setItem("stuId", data);
+			var stuPWD = md5($("#password").val());
+			sessionStorage.setItem("stuPwd", stuPWD);
+			window.location.href = "Homework/SelectHomework.html";
+		}
+
+		$(document).ready(function() {
+			$("#BackToIndex").click(function() {
+				window.location.href = "../index.html";
+			})
+		});
+		$("#login").click(function() {
+			$.ajax({
+				url: "/api/student/account/login",
+				data: {
+					'stuId': $("#userName").val(),
+					'pwd': md5($("#password").val())
+				},
+				type: 'post',
+				contentType: "application/x-www-form-urlencoded;charset=UTF-8",
+				dataType: "text",
+				async: false,
+				success: function(data) {
+					if(data == "STUID_WRONG" || data == "PWD_WRONG"){
+						alert("账号或密码错误");
+					}
+					else{
+						StuLoginSuccess(data);
+					}
+				},
+				error: function(XMLHttpRequest, textStatus, errorThrown) {
+
+				}
+			});
+		})
+	</script>
+</html>

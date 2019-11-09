@@ -1,0 +1,180 @@
+<!DOCTYPE >
+<html>
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+    	<meta name="viewport" content="width=device-width, initial-scale=1">		
+		<title>A-Class</title> 
+		<link rel="stylesheet" href="../../css/bootstrap.css">  
+		<link rel="stylesheet" href="../../css/common.css">  
+		<link rel="stylesheet" href="../../css/navBar.css">  
+		<link rel="stylesheet" href="../../css/table.css">  
+		<script src="../../js/jquery.min.js"></script>	 
+		<script src="../../js/bootstrap.min.js"></script>
+		<script src="../../js/bootbox.min.js"></script>  
+	</head>
+	
+	<style>
+
+	</style>
+	
+	<body background="../../img/BackGround.png">
+		<!-- 导航栏 -->
+		<div>
+			<nav class="navbar navbar-AClass" role="navigation">
+				<div class="container-fluid">
+					<div class="navbar-header">
+						<a class="navbar-brand" href="#">A-Class</a>
+					</div>
+					<div>
+						<ul class="nav navbar-nav">
+						<li><a id="homeWorkPage"  href="../Homework/selectHomework.html">作业</a></li>
+						<li><a id="rollCallPage" class="currentPage" href="searchRollCall.html">点名</a></li>
+						<li><a id="studentPage" href="../StudentManage/studentManage.html">学生</a></li>
+						<li><a id="accountPage" href="../Account/changePwd.html">账号</a></li>
+						<li><a id="exitPage" href="#">退出</a></li>
+					</div>
+				</div>
+			</nav>
+		</div>
+		<!-- 导航栏结束 -->
+		
+		<div class="container">
+			<button id="startRollCall" class="btn" style="background: #6cb989;color: #fff;">开始点名</button>
+			<button id="goRollCall" onclick="goToRollCall()" class="btn" style="background: #6cb989;color: #fff;">人脸签到</button>
+			<!-- 签到列表 -->
+			<div>
+				<table class="table" style="width: 900px;margin-top: 20px;">
+					<thead id="myThead">
+						<tr>
+							<th class="col-lg-1">序号</th>
+							<th class="col-lg-1">日期</th>
+						</tr>
+					</thead>
+					<tbody>
+					</tbody>
+			</div>
+			
+			<!-- 学生列表 -->
+			<div>
+				<table class="table" style="width: 900px;margin-top: 20px;">
+					<thead>
+						<tr>
+							<th class="col-lg-2">学号</th>
+							<th class="col-lg-2">姓名</th>
+							<th class="col-lg-2">是否签到</th>
+						</tr>
+					</thead>
+					<tbody id="myTbody">
+					</tbody>
+				</table>
+			</div>
+			<!-- 学生列表结束 -->
+		</div>
+		
+	</body>
+	
+	
+	<script>
+		// 导航栏高亮
+		$("#rollCallPage").addClass("currentPage");
+		$.ajax({
+						url: "/api/teacher/rollCall/date", 
+						type: 'post',
+						contentType: "application/x-www-form-urlencoded;charset=UTF-8",
+						dataType: "text",
+						async: false, 
+						success: function (data) {
+							getDate(data);
+						},
+						error: function(XMLHttpRequest, textStatus, errorThrown) {
+							
+						}
+					});
+		function getDate(data) {
+			var dataObj = eval(data);
+			
+			var insertHtml;
+			
+			$.each(dataObj,function(index,item){
+				item = eval("("+item+")");
+				insertHtml +=  "<tr onclick='getStudent(\""+item.date+"\")'>"
+							  +"<td>" + item.id + "</td>"
+							  +"<td>" + item.date + "</td>"
+							  +"</tr>"
+			});
+			$("#myThead").append(insertHtml);
+		}
+		
+		function getStudent(date){
+			$.ajax({
+							url: "/api/teacher/rollCall/detail", 
+							data:{
+								'date':date,
+							},
+							type: 'post',
+							contentType: "application/x-www-form-urlencoded;charset=UTF-8",
+							dataType: "text",
+							async: false, 
+							success: function (data) {
+								printStudent(data);
+							},
+							error: function(XMLHttpRequest, textStatus, errorThrown) {
+								
+							}
+						});
+		}
+		
+		function printStudent(data) {
+			var dataObj = eval(data);
+			
+			var insertHtml;
+			
+			$.each(dataObj,function(index,item){
+				item = eval("("+item+")");
+				insertHtml +=  "<tr>"
+							  +"<td>" + item.stuId+ "</td>"
+							  +"<td>" + item.stuName + "</td>";
+				if(item.status){
+					insertHtml+="<td>已签到</td>"+"</tr>"
+				}
+				else{
+					insertHtml+="<td>未签到</td>"+"</tr>"
+				}
+			});
+			$("#myTbody").append(insertHtml);
+		}
+		
+		$("#startRollCall").click(function(){
+			
+				$.ajax({
+						url: "/api/teacher/rollCall/startRollCall", 
+						data:{
+						},
+						type: 'post',
+						contentType: "application/x-www-form-urlencoded;charset=UTF-8",
+						dataType: "text",
+						async: false, 
+						success: function (data) {
+							if(data == "ROLLCALL_START_SUCCESS")
+							{
+								alert("点名开始！");
+							}
+						},
+						error: function(XMLHttpRequest, textStatus, errorThrown) {
+							
+						}
+					});
+		});
+		
+		function goToRollCall()
+		{
+			window.location.href = "rollCall.html"
+		}
+		$("#exitPage").click(function() {
+			sessionStorage.clear();
+			window.location.href = "../../index.html";
+		});
+	</script>
+</html>

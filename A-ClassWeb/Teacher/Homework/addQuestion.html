@@ -1,0 +1,134 @@
+<!DOCTYPE >
+<html>
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>A-Class</title>
+
+		<script src="../../js/jquery.min.js"></script>
+		<script src="../../js/bootstrap.min.js"></script>
+		<script src="../../js/bootbox.min.js"></script>
+
+		<link rel="stylesheet" href="../../css/bootstrap.css">
+		<link rel="stylesheet" href="../../css/common.css">
+		<link rel="stylesheet" href="../../css/navBar.css">
+		<link rel="stylesheet" href="../../css/table.css">
+
+		<style>
+			.question {
+				padding-top: 20px;
+				padding-left: 20px;
+				min-height: 250px;
+				background: #ffffff88;
+				font-size: 18px;
+
+				border-bottom: 2px solid #777;
+			}
+
+			.answer {
+				margin-top: 50px;
+
+				padding-top: 20px;
+				padding-left: 20px;
+				background: #ffffff88;
+				height: 80px;
+
+				border-bottom: 2px solid #777;
+			}
+
+			.uploadBtn {
+				padding-top: 2px;
+				padding-bottom: 2px;
+				padding-left: 9px;
+				padding-right: 9px;
+				background: #63ff97;
+
+				border-radius: 5px;
+				border: 1px #888 solid;
+			}
+		</style>
+	</head>
+
+
+
+	<body background="../../img/BackGround.png">
+		<!-- 导航栏 -->
+		<div>
+			<nav class="navbar navbar-AClass" role="navigation">
+				<div class="container-fluid">
+					<div class="navbar-header">
+						<a class="navbar-brand" href="#">A-Class</a>
+					</div>
+					<div>
+						<ul class="nav navbar-nav">
+							<li><a id="homeWorkPage" class="currentPage" href="selectHomework.html">作业</a></li>
+							<li><a id="rollCallPage" href="../RollCall/searchRollCall.html">点名</a></li>
+							<li><a id="studentPage" href="../StudentManage/studentManage.html">学生</a></li>
+							<li><a id="accountPage" href="../Account/changePwd.html">账号</a></li>
+							<li><a id="exitPage" href="#">退出</a></li>
+						</ul>
+					</div>
+				</div>
+			</nav>
+		</div>
+		<!-- 导航栏结束 -->
+
+		<div class="container">
+			<div class="question" contenteditable="true">
+				在此输入题目内容
+			</div>
+			<button id="UploadHomework" class="btn pull-right" style="background: #6cb989;color: #fff;margin-top: 20px;">确定</button>
+		</div>
+
+
+
+
+
+
+		<script>
+			// 导航栏高亮
+			$("#homeWorkPage").addClass("currentPage");
+			$("#exitPage").click(function() {
+				sessionStorage.clear();
+				window.location.href = "../../index.html";
+			});
+			$("#UploadHomework").click(function() {
+				var homeworkId = sessionStorage.getItem("teacherHomeworkId");
+				var question = $(".question").html();
+				var teacherId = sessionStorage.getItem("teacherId");
+				var teacherPwd = sessionStorage.getItem("teacherPwd");
+				var mark = "";
+				$.ajax({
+					url: "/api/teacher/homework/addQuestion",
+					data: {
+						'homeworkId': homeworkId,
+						'title': question,
+						'teacherId': teacherId,
+						'pwd': teacherPwd,
+					},
+					type: 'post',
+					contentType: "application/x-www-form-urlencoded;charset=UTF-8",
+					dataType: "text",
+					async: false,
+					success: function(data) {
+						if(data == "ADD_QUESTION_SUCCESS"){
+							uploadSuccess();
+						}
+						else{
+							alert("添加失败!");
+						}
+					},
+					error: function(XMLHttpRequest, textStatus, errorThrown) {
+
+					}
+				});
+			})
+			function uploadSuccess(){
+				alert("上传成功！");
+				window.location.href="selectQuestion.html";
+			}
+		</script>
+	</body>
+</html>

@@ -1,0 +1,184 @@
+<!DOCTYPE >
+<html>
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+    	<meta name="viewport" content="width=device-width, initial-scale=1">		
+		<title>A-Class</title> 
+		<link rel="stylesheet" href="../../css/bootstrap.css">  
+		<link rel="stylesheet" href="../../css/common.css">  
+		<link rel="stylesheet" href="../../css/navBar.css">  
+		<link rel="stylesheet" href="../../css/table.css">  
+		<script src="../../js/jquery.min.js"></script>	 
+		<script src="../../js/bootstrap.min.js"></script>
+		<script src="../../js/bootbox.min.js"></script>  
+	</head>
+	
+	<style>
+		.monthSelector
+		{
+			color: #fff;
+			border-radius: 5px;
+			padding-top: 7px;
+			padding-bottom: 7px;
+			padding-left: 20px;
+			padding-right: 20px;
+			display: inline;
+			background: #319a58;
+			user-select:none;
+			cursor: pointer;
+		}
+		
+		.monthSelector:hover
+		{
+			color: #000;
+			background: #61d48c;
+		}
+		
+		.highLight
+		{
+			color: #fff;
+			background: #2a5e3e;
+		}
+		
+		.addHomework
+		{
+			cursor: pointer;
+			font-size: 18px;
+			color: black;
+		}
+		
+		.addHomework:hover
+		{
+			color: black;
+		}
+
+	</style>
+	
+	<body background="../../img/BackGround.png">
+		<!-- 导航栏 -->
+		<div>
+			<nav class="navbar navbar-AClass" role="navigation">
+				<div class="container-fluid">
+					<div class="navbar-header">
+						<a class="navbar-brand" href="#">A-Class</a>
+					</div>
+					<div>
+						<ul class="nav navbar-nav">
+						<li><a id="homeWorkPage" class="currentPage" href="selectHomework.html">作业</a></li>
+						<li><a id="rollCallPage" href="../RollCall/searchRollCall.html">点名</a></li>
+						<li><a id="studentPage" href="../StudentManage/studentManage.html">学生</a></li>
+						<li><a id="accountPage" href="../Account/changePwd.html">账号</a></li>
+						<li><a id="exitPage" href="#">退出</a></li>
+					</div>
+				</div>
+			</nav>
+		</div>
+		<!-- 导航栏结束 -->
+		
+		<div class="container">
+			<!-- 月份选择器 -->
+			<div>
+				<div class="monthSelector highLight" data-month="01">一月</div>
+				<div class="monthSelector" data-month="02">二月</div>
+				<div class="monthSelector" data-month="03">三月</div>
+				<div class="monthSelector" data-month="04">四月</div>
+				<div class="monthSelector" data-month="05">五月</div>
+				<div class="monthSelector" data-month="06">六月</div>
+				<div class="monthSelector" data-month="07">七月</div>
+				<div class="monthSelector" data-month="08">八月</div>
+				<div class="monthSelector" data-month="09">九月</div>
+				<div class="monthSelector" data-month="10">十月</div>
+				<div class="monthSelector" data-month="11">十一月</div>
+				<div class="monthSelector" data-month="12">十二月</div>
+			</div>
+			<!-- 月份选择器结束-->
+			
+			<div style="margin-top: 20px;">
+				<a class="addHomework" href="addHomework.html">添加作业</a>
+			</div>
+			<!-- 作业列表 -->
+			<div>
+				<table class="table" style="width: 900px;margin-top: 10px;">
+					<thead>
+						<tr>
+							<th class="col-lg-2">作业名称</th>
+							<th class="col-lg-2">发布日期</th>
+							<th class="col-lg-2">截止日期</th>
+						</tr>
+					</thead>
+					<tbody id="myTBody">
+					
+					</tbody>
+				</table>
+			</div>
+			<!-- 作业列表结束 -->
+		</div>
+		
+	</body>
+	
+	
+	<script>
+		// 导航栏高亮
+		$("#homeWorkPage").addClass("currentPage");
+		$("#exitPage").click(function() {
+			sessionStorage.clear();
+			window.location.href = "../../index.html";
+		});
+		// 选择月份
+		var _monthSelect = "01"; //已经选择的月份
+		
+		$(".monthSelector").click(function(){
+			
+			if($(this).is(".highLight"))
+			{
+				return;
+			}
+			
+			$(".highLight").removeClass("highLight");
+			$(this).addClass("highLight");
+			
+			_monthSelect = $(this).data("month");
+			var teacherId = sessionStorage.getItem("teacherId");
+			$.ajax({
+							url: "/api/teacher/homework/month", 
+							data: {
+									'month':_monthSelect,
+									'teacherId':teacherId,
+									},
+							type: 'post',
+							contentType: "application/x-www-form-urlencoded;charset=UTF-8",
+							dataType: "text",
+							async: false, 
+							success: function (data) {
+								getHomework(data);
+							},
+							error: function(XMLHttpRequest, textStatus, errorThrown) {
+								
+							}
+						});
+		});
+		
+		function getHomework(data){
+						var dataObj = eval(data);
+						
+						var insertHtml;
+						$("#myTBody").html("");
+						$.each(dataObj,function(index,item){
+							item = eval("("+item+")");
+							insertHtml +=  "<tr onclick='selectHomework("+item.id+")'>"
+										  +"<td>" + item.name + "</td>"
+										  +"<td>" + item.uploadDate + "</td>"
+										  +"<td>" + item.destDate + "</td>"
+										  +"</tr>"
+						});
+						$("#myTBody").append(insertHtml);
+		}
+		function selectHomework(id)
+		{
+			sessionStorage.setItem("teacherHomeworkId",id);
+			window.location.href="selectQuestion.html";
+		}
+	</script>
+</html>

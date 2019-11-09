@@ -1,0 +1,108 @@
+<!DOCTYPE >
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+    	<meta name="viewport" content="width=device-width, initial-scale=1">		
+		<title>A-Class</title> 
+		<link rel="stylesheet" href="../../css/bootstrap.min.css">  
+		<link rel="stylesheet" href="../../css/common.css">  
+		<link rel="stylesheet" href="../../css/navBar.css">  
+		<script src="../../js/jquery.min.js"></script>	 
+		<script src="../../js/bootstrap.min.js"></script>
+		<script src="../../js/bootbox.min.js"></script>
+		<script src="../../js/md5.js"></script>
+	</head>
+	
+	<style>
+		.row
+		{
+			margin-top: 20px;
+		}
+	</style>
+	
+	<body background="../../img/BackGround.png">
+		<!-- 导航栏 -->
+		<div>
+			<nav class="navbar navbar-AClass" role="navigation">
+				<div class="container-fluid">
+					<div class="navbar-header">
+						<a class="navbar-brand" href="#">A-Class</a>
+					</div>
+					<div>
+						<ul class="nav navbar-nav">
+						<li><a id="homeWorkPage" href="../Homework/selectHomework.html">作业</a></li>
+						<li><a id="rollCallPage" href="../RollCall/searchRollCall.html">点名</a></li>
+						<li><a id="studentPage" href="../StudentManage/studentManage.html">学生</a></li>
+						<li><a id="accountPage" class="currentPage" href="changePwd.html">账号</a></li>
+						<li><a id="exitPage" href="#">退出</a></li>
+					</div>
+				</div>
+			</nav>
+		</div>
+		<!-- 导航栏结束 -->
+		
+		<div class="container">
+			<span style="color:#555">修改密码</span>
+			<div style="border-top: 2px #aaa solid;padding-left: 50px;">
+				<div class="row">
+					<label>原密码:</label></br>
+					<input type="password" id="oldPwd"/>
+				</div>
+				<div class="row">
+					<label>新密码:</label></br>
+					<input type="password" id="newPwd"/>
+				</div>
+				<div class="row">
+					<label>重复密码:</label></br>
+					<input type="password" id="checkNewPwd"/>
+				</div>
+				<div class="row">
+					<button id="changePwd" class="btn" style="background: #6cb989;color: #fff;">确定</button>
+				</div>
+			</div>
+		</div>
+	</body>
+	
+	
+	<script>
+		// 导航栏高亮
+		$("#accountPage").addClass("currentPage");
+		$("#exitPage").click(function() {
+			sessionStorage.clear();
+			window.location.href = "../../index.html";
+		});
+		$("#changePwd").click(function() {
+			if ($("#newPwd").val() == $("#checkNewPwd").val()) {
+				var teacherId = sessionStorage.getItem("teacherId");
+				$.ajax({
+					url: "/api/teacher/account/changePwd",
+					data: {
+						'teacherId': teacherId,
+						'oldPwd': md5($("#oldPwd").val()),
+						'newPwd': md5($("#newPwd").val())
+					},
+					type: 'post',
+					contentType: "application/x-www-form-urlencoded;charset=UTF-8",
+					dataType: "text",
+					async: false,
+					success: function(data) {
+						if(data == "PWD_CHANGE_SUCESS"){
+							alert("更改密码成功!");
+							window.location.href="../login.html";
+						}
+						else if(data == "PWD_CHANGE_FAILED"){
+							alert("你的旧密码错误");
+						}
+					},
+					error: function() {
+						
+					}
+				})
+			}
+			else {
+				alert("两次密码不相同");
+			}
+		})
+	</script>
+</html>

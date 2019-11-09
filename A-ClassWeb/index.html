@@ -1,0 +1,68 @@
+<!DOCTYPE >
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+    	<meta name="viewport" content="width=device-width, initial-scale=1">		
+		<title>A-Class</title> 
+		<link rel="stylesheet" href="css/bootstrap.min.css">  
+		<script src="js/jquery.min.js"></script>	 
+		<script src="js/bootstrap.min.js"></script>
+		<script src="js/bootbox.min.js"></script>  
+		<script src="js/md5.js"></script>
+	</head>
+	
+	<style>
+		.CharacterSelect
+		{
+			width: 350px;
+			margin: 90px;
+			height: 200px;
+			border: 1px solid;
+			display: inline-block;
+			cursor: pointer;
+		}
+		
+		.CharacterTitle
+		{
+			padding-left: 25px;
+			font-size: 20px;
+			background: #1c7643;
+			color: #fff;
+			width: 350px;
+		}
+		
+		.CharacterImg
+		{
+			height: 85.5%;
+		}
+		
+	</style>
+	
+	<body background="img/BackGround.png">
+		<div class="container" style="padding-top: 200px;">
+			<div  id="TeacherLogin"  class="CharacterSelect" style="border-color: #2ec770;">
+				<div class="CharacterTitle">我是老师</div>
+				<div class="CharacterImg" style="background: url(img/Teacher.png);"></div>
+			</div>
+			
+			<div id="StudentLogin" class="CharacterSelect" style="border-color: #2ec770;">
+				<div class="CharacterTitle">我是学生</div>
+				<div class="CharacterImg" style="background: url(img/Student.png);"></div>
+			</div>
+		</div>
+	</body>
+	
+	<script>
+		$(document).ready(function(){
+			$("#TeacherLogin").click(function(){
+				window.location.href="Teacher/login.html";
+			});
+			$("#StudentLogin").click(function(){
+				window.location.href="Student/login.html";
+			})
+		})
+		
+		
+	</script>
+</html>

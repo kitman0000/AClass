@@ -1,0 +1,22 @@
+.navbar-AClass
+{
+
+	background: #1c7643;
+}
+
+.nav > li > a,.navbar-header>a
+{
+	color: #fff;
+}
+
+.nav > li > a:hover,.nav > li > a:focus
+{
+	background: #b1ffb5;
+	color: #000;
+}
+
+.currentPage
+{
+	background: #66ea98;
+	color: #000 !important;
+}

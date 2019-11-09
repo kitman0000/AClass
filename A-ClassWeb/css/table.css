@@ -1,0 +1,17 @@
+td
+{
+	border-top-color: #005e1f !important;
+}
+tbody>tr:hover
+{
+	text-decoration: underline;
+}
+th
+{
+	border-bottom-color:#005e1f !important;
+}
+
+tbody>tr
+{
+	cursor: pointer;
+}

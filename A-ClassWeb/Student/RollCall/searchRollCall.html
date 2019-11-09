@@ -1,0 +1,110 @@
+<!DOCTYPE >
+<html>
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+    	<meta name="viewport" content="width=device-width, initial-scale=1">		
+		<title>A-Class</title> 
+		<link rel="stylesheet" href="../../css/bootstrap.css">  
+		<link rel="stylesheet" href="../../css/common.css">  
+		<link rel="stylesheet" href="../../css/navBar.css">  
+		<link rel="stylesheet" href="../../css/table.css">  
+		<script src="../../js/jquery.min.js"></script>	 
+		<script src="../../js/bootstrap.min.js"></script>
+		<script src="../../js/bootbox.min.js"></script>  
+	</head>
+	
+	<style>
+
+	</style>
+	
+	<body background="../../img/BackGround.png">
+		<!-- 导航栏 -->
+		<div>
+			<nav class="navbar navbar-AClass" role="navigation">
+				<div class="container-fluid">
+					<div class="navbar-header">
+						<a class="navbar-brand" href="#">A-Class</a>
+					</div>
+					<div>
+						<ul class="nav navbar-nav">
+						<li><a id="homeWorkPage" href="../Homework/SelectHomework.html">作业</a></li>
+						<li><a id="rollCallPage" href="#">点名</a></li>
+						<li><a id="accountPage" href="../Account/changePwd.html">账号</a></li>
+						<li><a id="exitPage" href="#">退出</a></li>
+					</div>
+				</div>
+			</nav>
+		</div>
+		<!-- 导航栏结束 -->
+		
+		<div class="container">
+			
+			<!-- 作业列表 -->
+			<div>
+				<table class="table" style="width: 900px;margin-top: 20px;">
+					<thead>
+						<tr>
+							<th class="col-lg-2">签到日期</th>
+							<th class="col-lg-2">是否签到</th>
+						</tr>
+					</thead>
+					<tbody id="myTBody">
+						<tr>
+							<td>2019-10-01</td>
+							<td>是</td>
+						</tr>
+						<tr>
+							<td>2019-10-01</td>
+							<td>是</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<!-- 作业列表结束 -->
+		</div>
+		
+	</body>
+	
+	
+	<script>
+		// 导航栏高亮
+		$("#rollCallPage").addClass("currentPage");
+		var stuId = sessionStorage.getItem("stuId");
+		$.ajax({
+						url: "student/rollCall/detail", 
+						data: {
+								'stuId':stuId
+								},
+						type: 'post',
+						contentType: "application/x-www-form-urlencoded;charset=UTF-8",
+						dataType: "text",
+						async: false, 
+						success: function (data) {
+							rollCallDetail(data);
+						},
+						error: function() {
+							
+						}
+					});
+		function rollCallDetail(data){
+			var dataObj = eval(data);
+			
+			var insertHtml;
+						
+			$.each(dataObj,function(index,item){
+				item = eval("("+item+")");
+				insertHtml +=  "<tr>"
+							  +"<td>" + item.date + "</td>"
+							  +"<td>" + item.status + "</td>"
+							  +"</tr>"
+			});
+			$("#myTBody").append(insertHtml);
+		}
+		$("#exitPage").click(function() {
+			sessionStorage.clear();
+			window.location.href = "../../index.html";
+		});
+	</script>
+</html>

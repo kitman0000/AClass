@@ -1,0 +1,157 @@
+<!DOCTYPE >
+<html>
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">		
+		<title>A-Class</title> 
+		<link rel="stylesheet" href="../../css/bootstrap.css">  
+		<link rel="stylesheet" href="../../css/common.css">  
+		<link rel="stylesheet" href="../../css/navBar.css">  
+		<link rel="stylesheet" href="../../css/table.css">  
+		<script src="../../js/jquery.min.js"></script>	 
+		<script src="../../js/bootstrap.min.js"></script>
+		<script src="../../js/bootbox.min.js"></script>  
+	</head>
+	
+<body background="../../img/BackGround.png">
+		<!-- 导航栏 -->
+		<div>
+			<nav class="navbar navbar-AClass" role="navigation">
+				<div class="container-fluid">
+					<div class="navbar-header">
+						<a class="navbar-brand" href="#">A-Class</a>
+					</div>
+					<div>
+						<ul class="nav navbar-nav">
+						<li><a id="homeWorkPage" href="../Homework/selectHomework.html">作业</a></li>
+						<li><a id="rollCallPage" class="currentPage" href="searchRollCall.html">点名</a></li>
+						<li><a id="studentPage" href="../StudentManage/studentManage.html">学生</a></li>
+						<li><a id="accountPage" href="../Account/changePwd.html">账号</a></li>
+						<li><a id="exitPage" href="#">退出</a></li>
+					</ul></div>
+				</div>
+			</nav>
+		</div>
+		<!-- 导航栏结束 -->
+	
+		<div class="container" align="center">
+			<div>
+				<video id="video" width="480" height="320" controls="false"></video>
+			</div>
+			
+			<div style="margin-top: 30px;">
+				<button style="background: #6cb989;color: #fff;width: 280;" class="btn" id="capture">签到</button>
+			</div>
+			
+			<div id="rollCallMsg" style="padding-top: 5px; padding-left: 5px; font-size: 18px;">
+				
+			</div>
+		</div>
+		
+		<canvas style="display: none;" id="canvas" width="480" height="320"></canvas>
+	</div>
+  <script>
+    //访问用户媒体设备的兼容方法
+    function getUserMedia(constraints, success, error) {
+      if (navigator.mediaDevices.getUserMedia) {
+        //最新的标准API
+        navigator.mediaDevices.getUserMedia(constraints).then(success).catch(error);
+      } else if (navigator.webkitGetUserMedia) {
+        //webkit核心浏览器
+        navigator.webkitGetUserMedia(constraints,success, error)
+      } else if (navigator.mozGetUserMedia) {
+        //firfox浏览器
+        navigator.mozGetUserMedia(constraints, success, error);
+      } else if (navigator.getUserMedia) {
+        //旧版API
+        navigator.getUserMedia(constraints, success, error);
+      }
+    }
+ 
+    let video = document.getElementById('video');
+    let canvas = document.getElementById('canvas');
+    let context = canvas.getContext('2d');
+ 
+    function success(stream) {
+      //兼容webkit核心浏览器
+      let CompatibleURL = window.URL || window.webkitURL;
+      //将视频流设置为video元素的源
+      console.log(stream);
+ 
+      //video.src = CompatibleURL.createObjectURL(stream);
+      video.srcObject = stream;
+      video.play();
+    }
+ 
+    function error(error) {
+      console.log(`访问用户媒体设备失败${error.name}, ${error.message}`);
+    }
+ 
+    if (navigator.mediaDevices.getUserMedia || navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia) {
+      //调用用户媒体设备, 访问摄像头
+      getUserMedia({video : {width: 480, height: 320}}, success, error);
+    } else {
+      alert('不支持访问用户媒体');
+    }
+ 
+    document.getElementById('capture').addEventListener('click', function () {
+      context.drawImage(video, 0, 0, 480, 320);      
+			upload();
+    })
+	
+	
+	function snapShot()
+	{
+	}
+	
+	function upload()
+	{
+		var imgData=canvas.toDataURL("image/png");
+		var data=imgData.substr(22);
+		parseUpload(""); 
+
+		$.ajax({
+			url: "api/teacher/teacher/rollCall", 
+			data: {
+						"imgData":data,
+					},
+			type: 'post',
+			contentType: "application/x-www-form-urlencoded;charset=UTF-8",
+			dataType: "text",
+			async: false, 
+			success: function (data) {
+				parseUpload(data); 
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown) {
+				parseUpload("ERROR");
+			}
+		});
+	}
+	
+	function parseUpload(data)
+	{
+
+		if(data == "ERROR")
+		{
+			$("#rollCallMsg").html("未识别到人脸，请重新尝试");
+		}
+		else if(data.indexOf("NO_FACE_FOUND")!="-1")
+		{
+			$("#rollCallMsg").html("无法识别此人");
+		}
+		else if(data.indexOf("HAS_ROLL_CALL")!="-1")
+		{
+			$("#rollCallMsg").html(data.replace("HAS_ROLL_CALL","")+"，请勿重复签到");
+		}
+		else
+			$("#rollCallMsg").html(data+"，签到成功")
+	}
+	$("#exitPage").click(function() {
+		sessionStorage.clear();
+		window.location.href = "../../index.html";
+	});
+  </script>
+</body>
+</html>
