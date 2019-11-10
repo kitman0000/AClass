@@ -26,7 +26,9 @@ A-Class 是一个线上作业，线下签到的解决方案，适用于任何需
 	
 ## 相关连接
   使用说明 https://github.com/kitman0000/AClass/blob/master/Doc/A-class%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E.docx
+  
   设计文档 https://github.com/kitman0000/AClass/blob/master/Doc/%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3.docx
+  
   WEB API https://github.com/kitman0000/AClass/blob/master/Doc/A-CLASS%20WEB%20API.xlsx
 	
 ## 项目作者
