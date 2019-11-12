@@ -40,4 +40,4 @@ A-Class 是一个线上作业，线下签到的解决方案，适用于任何需
 ## 项目作者
 	kitman0000
 	suo_er
-	a单身狗之怒
+	clariszyf
